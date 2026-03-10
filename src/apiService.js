@@ -23,18 +23,15 @@ export async function login(email, password) {
 
   return res.json();
 }
-
 export const getProfile = async (token) => {
-  const res = await fetch("http://localhost:8080/users/", {
+  const res = await fetch(`${API_BASE}/users/`, {
     method: "GET",
     headers: {
-      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
   });
 
-  const data = await res.json();
-  return data;
+  return res.json();
 };
 
 
