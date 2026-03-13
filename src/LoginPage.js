@@ -1,12 +1,15 @@
+
 import React, { useState } from "react";
 import { login } from "./apiService";
 
 function Login() {
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const data = await login(email, password);
 
     if (data.token) {
@@ -18,10 +21,12 @@ function Login() {
   };
 
   return (
-    <>
-      <h2>Login</h2>
+    <div className="card">
+
+      <h2 className="form-title">Login</h2>
 
       <form onSubmit={handleSubmit} className="form">
+
         <input
           type="email"
           placeholder="Email"
@@ -34,9 +39,13 @@ function Login() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button type="submit">Login</button>
+        <button type="submit">
+          Login
+        </button>
+
       </form>
-    </>
+
+    </div>
   );
 }
 

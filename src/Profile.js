@@ -2,38 +2,46 @@ import React, { useState } from "react";
 import { getProfile } from "./apiService";
 
 function Profile() {
+
   const [user, setUser] = useState(null);
 
   const loadProfile = async () => {
-  try {
-    const token = localStorage.getItem("token");
-    console.log("Token being sent:", token);
+    const data = await getProfile();
 
-    if (!token) {
-      alert("Please login first");
+    if (data.error) {
+      alert(data.error);
       return;
     }
 
-    const data = await getProfile(token);
     setUser(data.user);
-  } catch (error) {
-    console.error("Error loading profile:", error);
-  }
-};
+  };
 
   return (
-    <>
+    <div className="card">
+
       <h2>User Profile</h2>
 
-      <button onClick={loadProfile}>Load Profile</button>
+      <button className="profile-btn" onClick={loadProfile}>
+        Load Profile
+      </button>
 
       {user && (
-        <div className="profile">
-          <p><strong>ID:</strong> {user.id}</p>
-          <p><strong>Email:</strong> {user.email}</p>
+        <div className="profile-box">
+
+          <div className="profile-row">
+            <span className="label">User ID</span>
+            <span>{user.id}</span>
+          </div>
+
+          <div className="profile-row">
+            <span className="label">Email</span>
+            <span>{user.email}</span>
+          </div>
+
         </div>
       )}
-    </>
+
+    </div>
   );
 }
 
