@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { login } from "./apiService";
 
@@ -10,13 +9,18 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const data = await login(email, password);
+    try {
 
-    if (data.token) {
-      localStorage.setItem("token", data.token);
+      const data = await login(email, password);
+
+      // store tokens
+      localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("refresh_token", data.refresh_token);
+
       alert("Login successful");
-    } else {
-      alert(data.error);
+
+    } catch (error) {
+      alert(error.message);
     }
   };
 
@@ -30,12 +34,14 @@ function Login() {
         <input
           type="email"
           placeholder="Email"
+          value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
         <input
           type="password"
           placeholder="Password"
+          value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 

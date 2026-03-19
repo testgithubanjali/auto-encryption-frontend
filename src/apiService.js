@@ -1,65 +1,129 @@
-const API_BASE = "http://localhost:8080";
+import React, { useState } from "react";
+import { encryptText, decryptText } from "./apiService";
 
-// SIGNUP
-export async function signup(email, password) {
-  const res = await fetch(`${API_BASE}/signup`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      email,
-      password
-    })
-  });
+function Notes() {
 
-  return res.json();
+const [text, setText] = useState("");
+const [encryptKey, setEncryptKey] = useState("");
+const [decryptKey, setDecryptKey] = useState("");
+
+const [encrypted, setEncrypted] = useState("");
+const [cipherInput, setCipherInput] = useState("");
+
+const [decrypted, setDecrypted] = useState("");
+
+const handleEncrypt = async () => {
+
+
+if (!text) {
+  alert("Enter text to encrypt");
+  return;
 }
 
-// LOGIN
-export async function login(email, password) {
-  const res = await fetch(`${API_BASE}/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      email,
-      password
-    })
-  });
+try {
 
-  return res.json();
+  const data = await encryptText(text, encryptKey);
+
+  setEncrypted(data.ciphertext);
+
+  // IMPORTANT: do NOT auto-fill decrypt input
+  // setCipherInput(data.ciphertext);  ❌ removed
+
+} catch (err) {
+  console.error("Encryption failed:", err);
 }
 
-// GET USER PROFILE
-export async function getProfile() {
+};
 
-  const token = localStorage.getItem("token");
+const handleDecrypt = async () => {
 
-  const res = await fetch(`${API_BASE}/users`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
 
-  // if server returned a non-2xx status, try to surface the error message
-  if (!res.ok) {
-    let msg;
-    try {
-      const data = await res.json();
-      msg = data.error || JSON.stringify(data);
-    } catch (e) {
-      msg = await res.text();
-    }
-    throw new Error(msg || `Request failed with status ${res.status}`);
-  }
-
-  // attempt parsing JSON; if body is empty (e.g. 204) return null
-  try {
-    return await res.json();
-  } catch (e) {
-    return null;
-  }
+if (!cipherInput) {
+  alert("Enter encrypted text first");
+  return;
 }
+
+try {
+
+  const data = await decryptText(cipherInput, decryptKey);
+
+  setDecrypted(data.text);
+
+} catch (err) {
+  console.error("Decryption failed:", err);
+}
+
+
+};
+
+return (
+
+
+<div className="encrypt-wrapper">
+
+  <div className="encrypt-left">
+
+    <h2>Text Encryption</h2>
+
+    <textarea
+      placeholder="Enter any text to be encrypted"
+      value={text}
+      onChange={(e) => setText(e.target.value)}
+    />
+
+    <input
+      placeholder="Enter Secret Key"
+      value={encryptKey}
+      onChange={(e) => setEncryptKey(e.target.value)}
+    />
+
+    <button onClick={handleEncrypt}>
+      Encrypt
+    </button>
+
+    <h3>Encrypted Output</h3>
+
+    <textarea
+      value={encrypted}
+      readOnly
+    />
+
+  </div>
+
+
+  <div className="encrypt-right">
+
+    <h2>Text Decryption</h2>
+
+    <textarea
+      placeholder="Enter encrypted text"
+      value={cipherInput}
+      onChange={(e) => setCipherInput(e.target.value)}
+    />
+
+    <input
+      placeholder="Enter Secret Key"
+      value={decryptKey}
+      onChange={(e) => setDecryptKey(e.target.value)}
+    />
+
+    <button onClick={handleDecrypt}>
+      Decrypt
+    </button>
+
+    <h3>Decrypted Text</h3>
+
+    <textarea
+      value={decrypted}
+      readOnly
+    />
+
+  </div>
+
+</div>
+
+
+);
+}
+
+export default Notes;
