@@ -4,7 +4,7 @@ import Signup from "./Signup";
 import Login from "./LoginPage";
 import Profile from "./Profile";
 import FileEncryption from "./FileEncryption";
-import Notes from "./Notes";
+import Encryption from "./Encryption";
 
 import "./App.css";
 
@@ -18,7 +18,7 @@ function App() {
         <Link to="/signup">Signup</Link>
         <Link to="/login">Login</Link>
         <Link to="/profile">Profile</Link>
-        <Link to="/notes">Notes</Link>
+        <Link to="/Encryption">Encryption</Link>
         <Link to="/files">File Encryption</Link>
         
       </nav>
@@ -30,7 +30,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           
            <Route path="/files" element={<FileEncryption />} />
-            <Route path="/notes" element={<Notes />} />
+            <Route path="/Encryption" element={<Encryption />} />
         </Routes>
       </div>
 

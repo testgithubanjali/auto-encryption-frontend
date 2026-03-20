@@ -1,129 +1,154 @@
-import React, { useState } from "react";
-import { encryptText, decryptText } from "./apiService";
+// src/apiService.js
 
-function Notes() {
+const BASE_URL = "http://host.docker.internal:8080";
 
-const [text, setText] = useState("");
-const [encryptKey, setEncryptKey] = useState("");
-const [decryptKey, setDecryptKey] = useState("");
+// 🔐 LOGIN
+export const login = async (email, password) => {
+  const response = await fetch(`${BASE_URL}/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
+  });
 
-const [encrypted, setEncrypted] = useState("");
-const [cipherInput, setCipherInput] = useState("");
+  const data = await response.json();
 
-const [decrypted, setDecrypted] = useState("");
+  if (!response.ok) {
+    throw new Error(data.error || data.message || "Login failed");
+  }
 
-const handleEncrypt = async () => {
-
-
-if (!text) {
-  alert("Enter text to encrypt");
-  return;
-}
-
-try {
-
-  const data = await encryptText(text, encryptKey);
-
-  setEncrypted(data.ciphertext);
-
-  // IMPORTANT: do NOT auto-fill decrypt input
-  // setCipherInput(data.ciphertext);  ❌ removed
-
-} catch (err) {
-  console.error("Encryption failed:", err);
-}
-
+  return data;
 };
 
-const handleDecrypt = async () => {
+// 📝 SIGNUP (FIXED)
+export const signup = async ({ email, password }) => {
+  console.log("Sending signup:", { email, password });
 
+  const response = await fetch(`${BASE_URL}/signup`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email,
+      password,
+    }),
+  });
 
-if (!cipherInput) {
-  alert("Enter encrypted text first");
-  return;
-}
+  const data = await response.json();
 
-try {
+  if (!response.ok) {
+    console.error("Signup error:", data);
+    throw new Error(data.error || data.message || "Signup failed");
+  }
 
-  const data = await decryptText(cipherInput, decryptKey);
-
-  setDecrypted(data.text);
-
-} catch (err) {
-  console.error("Decryption failed:", err);
-}
-
-
+  return data;
 };
 
-return (
+// 🔒 ENCRYPT
+export const encryptText = async (text, secretKey) => {
+  const token = localStorage.getItem("access_token");
 
+  const response = await fetch(`${BASE_URL}/encrypt`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      text,
+      secret_key: secretKey,
+    }),
+  });
 
-<div className="encrypt-wrapper">
+  const data = await response.json();
 
-  <div className="encrypt-left">
+  if (!response.ok) {
+    throw new Error(data.message || "Encryption failed");
+  }
 
-    <h2>Text Encryption</h2>
+  return data;
+};
 
-    <textarea
-      placeholder="Enter any text to be encrypted"
-      value={text}
-      onChange={(e) => setText(e.target.value)}
-    />
+// 🔓 DECRYPT
+export const decryptText = async (ciphertext, secretKey) => {
+  const token = localStorage.getItem("access_token");
 
-    <input
-      placeholder="Enter Secret Key"
-      value={encryptKey}
-      onChange={(e) => setEncryptKey(e.target.value)}
-    />
+  const response = await fetch(`${BASE_URL}/decrypt`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      ciphertext,
+      secret_key: secretKey,
+    }),
+  });
 
-    <button onClick={handleEncrypt}>
-      Encrypt
-    </button>
+  const data = await response.json();
 
-    <h3>Encrypted Output</h3>
+  if (!response.ok) {
+    throw new Error(data.message || "Decryption failed");
+  }
 
-    <textarea
-      value={encrypted}
-      readOnly
-    />
+  return data;
+};
 
-  </div>
+// 👤 PROFILE
+export const getProfile = async () => {
+  const token = localStorage.getItem("access_token");
 
+  const response = await fetch(`${BASE_URL}/users`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-  <div className="encrypt-right">
+  const data = await response.json();
 
-    <h2>Text Decryption</h2>
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to fetch profile");
+  }
 
-    <textarea
-      placeholder="Enter encrypted text"
-      value={cipherInput}
-      onChange={(e) => setCipherInput(e.target.value)}
-    />
+  return data;
+};
+// 📤 ENCODE
+export const encodeText = async (text) => {
+  const res = await fetch(`${BASE_URL}/encode`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ text }),
+  });
 
-    <input
-      placeholder="Enter Secret Key"
-      value={decryptKey}
-      onChange={(e) => setDecryptKey(e.target.value)}
-    />
+  const data = await res.json();
 
-    <button onClick={handleDecrypt}>
-      Decrypt
-    </button>
+  if (!res.ok) {
+    throw new Error(data.error || "Encoding failed");
+  }
 
-    <h3>Decrypted Text</h3>
+  return data;
+};
 
-    <textarea
-      value={decrypted}
-      readOnly
-    />
+// 📥 DECODE
+export const decodeText = async (encoded) => {
+  const res = await fetch(`${BASE_URL}/decode`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ encoded }),
+  });
 
-  </div>
+  const data = await res.json();
 
-</div>
+  if (!res.ok) {
+    throw new Error(data.error || "Decoding failed");
+  }
 
-
-);
-}
-
-export default Notes;
+  return data;
+};
