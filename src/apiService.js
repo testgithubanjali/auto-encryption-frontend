@@ -1,6 +1,6 @@
 // src/apiService.js
 
-const BASE_URL = "http://host.docker.internal:8080";
+const BASE_URL = "http://localhost:8080";
 
 // 🔐 LOGIN
 export const login = async (email, password) => {
@@ -95,8 +95,47 @@ export const decryptText = async (ciphertext, secretKey) => {
 
   return data;
 };
+export const encodeText = async (text) => {
+  const token = localStorage.getItem("access_token");
 
-// 👤 PROFILE
+  const res = await fetch(`${BASE_URL}/encode`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,   // ✅ FIX
+    },
+    body: JSON.stringify({ text }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || "Encoding failed");
+  }
+
+  return data;
+};
+export const decodeText = async (encoded) => {
+  const token = localStorage.getItem("access_token");
+
+  const res = await fetch(`${BASE_URL}/decode`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,   // ✅ FIX
+    },
+    body: JSON.stringify({ encoded }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || "Decoding failed");
+  }
+
+  return data;
+};
+
 export const getProfile = async () => {
   const token = localStorage.getItem("access_token");
 
@@ -115,40 +154,6 @@ export const getProfile = async () => {
 
   return data;
 };
-// 📤 ENCODE
-export const encodeText = async (text) => {
-  const res = await fetch(`${BASE_URL}/encode`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ text }),
-  });
 
-  const data = await res.json();
 
-  if (!res.ok) {
-    throw new Error(data.error || "Encoding failed");
-  }
 
-  return data;
-};
-
-// 📥 DECODE
-export const decodeText = async (encoded) => {
-  const res = await fetch(`${BASE_URL}/decode`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ encoded }),
-  });
-
-  const data = await res.json();
-
-  if (!res.ok) {
-    throw new Error(data.error || "Decoding failed");
-  }
-
-  return data;
-};

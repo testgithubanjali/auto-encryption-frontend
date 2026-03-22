@@ -7,7 +7,7 @@ RUN npm install
 
 COPY . .
 
-RUN ls -la /app/src   # 👈 DEBUG LINE
+
 RUN npm run build
 
 FROM nginx:alpine

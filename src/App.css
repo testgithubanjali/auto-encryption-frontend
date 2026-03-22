@@ -133,3 +133,49 @@ button:hover {
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
+/* wrapper (same spacing as login below navbar) */
+.auth-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 80px;
+}
+
+/* card */
+.auth-card {
+  width: 500px;                /* slightly wider like your image */
+  padding: 40px;
+  border-radius: 16px;
+  background: #e6e6e6;         /* exact light grey */
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+/* title */
+.auth-title {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 30px;
+}
+
+/* inputs */
+.auth-input {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 18px;
+  border-radius: 8px;
+  border: 1px solid #cfcfcf;
+  font-size: 14px;
+}
+
+/* button */
+.auth-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 8px;
+  border: none;
+  font-weight: bold;
+  color: white;
+  background: linear-gradient(to right, #3b6be0, #2f5bd3); /* same blue */
+  cursor: pointer;
+  font-size: 15px;
+}
