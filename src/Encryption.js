@@ -1,55 +1,68 @@
 import React, { useState } from "react";
+import { authFetch } from "./utils/auth";
 
 function NotesEncryption() {
 
   const [text, setText] = useState("");
   const [encryptKey, setEncryptKey] = useState("");
-  const [decryptKey, setDecryptKey] = useState("");
+const [decryptKey, setDecryptKey] = useState("");
   const [encrypted, setEncrypted] = useState("");
   const [decrypted, setDecrypted] = useState("");
 
   // 🔐 ENCRYPT
   const encryptText = async () => {
-    try {
-      const res = await fetch("http://localhost:8080/encrypt", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`
-        },
-        body: JSON.stringify({
-          text: text,
-          secret_key: encryptKey   // ✅ FIXED
-        })
-      });
+  if (!text || !encryptKey) {
+    alert("Text and Key ID are required");
+    return;
+  }
 
-      const data = await res.json();
+  try {
+    console.log("Sending:", { text, encryptKey });
 
-      if (!res.ok) {
-        alert(data.error || "Encryption failed");
-        return;
-      }
+    const res = await authFetch("http://127.0.0.1:8080/encrypt", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        "X-Session-ID": localStorage.getItem("session_id"),
+      },
+      body: JSON.stringify({
+        text: text,
+      secret_key: encryptKey ,   
+      }),
+    });
 
-      setEncrypted(data.ciphertext);
+    const data = await res.json();
 
-    } catch (err) {
-      console.error(err);
-      alert("Encryption error");
+    if (!res.ok) {
+      alert(data.error || "Encryption failed");
+      return;
     }
-  };
 
-  // 🔓 DECRYPT
+    setEncrypted(data.ciphertext);
+
+  } catch (err) {
+    console.error(err);
+    alert("Encryption error");
+  }
+};
+  
   const decryptText = async () => {
+      if (!encrypted || !decryptKey) {
+    alert("Ciphertext and Secret Key are required");
+    return;
+  }
     try {
-      const res = await fetch("http://localhost:8080/decrypt", {
+      const res = await authFetch("http://127.0.0.1:8080/decrypt", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+           "X-Session-ID": localStorage.getItem("session_id") 
         },
         body: JSON.stringify({
           ciphertext: encrypted,
-          secret_key: decryptKey   // ✅ FIXED
+          secret_key: decryptKey  ,
         })
       });
 
@@ -71,7 +84,7 @@ function NotesEncryption() {
   return (
     <div className="encrypt-wrapper">
 
-      {/* LEFT SIDE */}
+      
       <div className="encrypt-left">
 
         <h2>Text Encryption</h2>
@@ -81,12 +94,11 @@ function NotesEncryption() {
           value={text}
           onChange={(e)=>setText(e.target.value)}
         />
-
         <input
-          placeholder="Enter Secret Key"
-          value={encryptKey}
-          onChange={(e)=>setEncryptKey(e.target.value)}
-        />
+  placeholder="Enter Secret Key"
+  value={encryptKey}
+  onChange={(e) => setEncryptKey(e.target.value)}
+/>
 
         <button onClick={encryptText}>
           Encrypt
@@ -101,7 +113,7 @@ function NotesEncryption() {
 
       </div>
 
-      {/* RIGHT SIDE */}
+      
       <div className="encrypt-right">
 
         <h2>Text Decryption</h2>
@@ -112,10 +124,10 @@ function NotesEncryption() {
         />
 
         <input
-          placeholder="Enter Secret Key"
-          value={decryptKey}
-          onChange={(e)=>setDecryptKey(e.target.value)}
-        />
+  placeholder="Enter Secret Key"
+  value={decryptKey}
+  onChange={(e) => setDecryptKey(e.target.value)}
+/>
 
         <button onClick={decryptText}>
           Decrypt

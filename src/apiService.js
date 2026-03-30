@@ -1,10 +1,12 @@
 // src/apiService.js
 
-const BASE_URL = "http://localhost:8080";
+import { authFetch } from "./utils/auth";
 
-// 🔐 LOGIN
+const BASE_URL = "http://127.0.0.1:8080";
+
+
 export const login = async (email, password) => {
-  const response = await fetch(`${BASE_URL}/login`, {
+  const response = await authFetch("http://127.0.0.1:8080/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -15,17 +17,16 @@ export const login = async (email, password) => {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.error || data.message || "Login failed");
+    throw new Error(data.error || "Login failed");
   }
 
   return data;
 };
 
-// 📝 SIGNUP (FIXED)
 export const signup = async ({ email, password }) => {
   console.log("Sending signup:", { email, password });
 
-  const response = await fetch(`${BASE_URL}/signup`, {
+  const response = await authFetch(`${BASE_URL}/signup`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -46,19 +47,22 @@ export const signup = async ({ email, password }) => {
   return data;
 };
 
-// 🔒 ENCRYPT
-export const encryptText = async (text, secretKey) => {
+export const encryptText = async (text, keyId) => {
+  
   const token = localStorage.getItem("access_token");
-
-  const response = await fetch(`${BASE_URL}/encrypt`, {
+  console.log("TOKEN:", token);
+  const sessionId = localStorage.getItem("session_id");
+   console.log("SESSION ID:", sessionId); 
+  const response = await authFetch(`${BASE_URL}/encrypt`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
+      "X-Session-ID": sessionId, 
     },
     body: JSON.stringify({
-      text,
-      secret_key: secretKey,
+      text: text,
+  secret_key: keyId 
     }),
   });
 
@@ -71,19 +75,23 @@ export const encryptText = async (text, secretKey) => {
   return data;
 };
 
-// 🔓 DECRYPT
-export const decryptText = async (ciphertext, secretKey) => {
-  const token = localStorage.getItem("access_token");
 
-  const response = await fetch(`${BASE_URL}/decrypt`, {
+export const decryptText = async (ciphertext, decryptKey) => {
+  const token = localStorage.getItem("access_token");
+  console.log("TOKEN:", token);
+  const sessionId = localStorage.getItem("session_id");
+   console.log("SESSION ID:", sessionId); 
+  const response = await authFetch(`${BASE_URL}/decrypt`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
+      "X-Session-ID": sessionId,
     },
     body: JSON.stringify({
       ciphertext,
-      secret_key: secretKey,
+       secret_key: decryptKey,
+      
     }),
   });
 
@@ -97,12 +105,16 @@ export const decryptText = async (ciphertext, secretKey) => {
 };
 export const encodeText = async (text) => {
   const token = localStorage.getItem("access_token");
+  console.log("TOKEN:", token);
+  const sessionId = localStorage.getItem("session_id");
+   console.log("SESSION ID:", sessionId); 
 
-  const res = await fetch(`${BASE_URL}/encode`, {
+  const res = await authFetch(`${BASE_URL}/encode`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,   // ✅ FIX
+      Authorization: `Bearer ${token}`, 
+      "X-Session-ID": sessionId,   
     },
     body: JSON.stringify({ text }),
   });
@@ -117,12 +129,15 @@ export const encodeText = async (text) => {
 };
 export const decodeText = async (encoded) => {
   const token = localStorage.getItem("access_token");
-
-  const res = await fetch(`${BASE_URL}/decode`, {
+  console.log("TOKEN:", token);
+const sessionId = localStorage.getItem("session_id");
+ console.log("SESSION ID:", sessionId); 
+  const res = await authFetch(`${BASE_URL}/decode`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,   // ✅ FIX
+      Authorization: `Bearer ${token}`,   
+      "X-Session-ID": sessionId, 
     },
     body: JSON.stringify({ encoded }),
   });
@@ -138,11 +153,14 @@ export const decodeText = async (encoded) => {
 
 export const getProfile = async () => {
   const token = localStorage.getItem("access_token");
-
-  const response = await fetch(`${BASE_URL}/users`, {
+  console.log("TOKEN:", token);
+  const sessionId = localStorage.getItem("session_id");
+   console.log("SESSION ID:", sessionId); 
+  const response = await authFetch(`${BASE_URL}/users`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
+      "X-Session-ID": sessionId, 
     },
   });
 
