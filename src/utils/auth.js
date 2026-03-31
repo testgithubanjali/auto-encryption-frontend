@@ -24,7 +24,7 @@ export const authFetch = async (url, options = {}) => {
 
     alert("Session expired. Please login again.");
 
-    window.location.href = "/"; 
+    window.location.href = "/login";
 
     return null;
   }

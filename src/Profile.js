@@ -26,20 +26,20 @@ function Profile() {
       </button>
 
       {user && (
-        <div className="profile-box">
+  <div className="profile-box">
 
-          <div className="profile-row">
-            <span className="label">User ID</span>
-            <span>{user.id}</span>
-          </div>
+    <div className="profile-row">
+      <span className="label">User ID:</span>
+      <span className="value">{user.id}</span>
+    </div>
 
-          <div className="profile-row">
-            <span className="label">Email</span>
-            <span>{user.email}</span>
-          </div>
+    <div className="profile-row">
+      <span className="label">Email:</span>
+      <span className="value">{user.email}</span>
+    </div>
 
-        </div>
-      )}
+  </div>
+)}
 
     </div>
   );

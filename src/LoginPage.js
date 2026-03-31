@@ -1,93 +1,93 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { login } from "./apiService";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const isLoggedIn = localStorage.getItem("access_token");
+  const navigate = useNavigate();
+
+  // ✅ Auto redirect if already logged in
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      navigate("/dashboard");
+    }
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!email || !password) {
+      alert("Please fill all fields");
+      return;
+    }
+
     try {
+      setLoading(true);
+
       const data = await login(email, password);
 
-      // ✅ check response properly
-      if (!data.access_token) {
+      if (!data || !data.access_token) {
         alert("Invalid login response");
         return;
       }
 
+      // ✅ Store tokens
       localStorage.setItem("access_token", data.access_token);
       localStorage.setItem("refresh_token", data.refresh_token);
       localStorage.setItem("session_id", data.session_id);
-      alert("Login successful");
-      window.location.reload();
+
+      navigate("/dashboard");
 
     } catch (error) {
       console.error(error);
       alert(error.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
-   localStorage.removeItem("session_id");
-    alert("Logged out successfully");
-    window.location.reload();
   };
 
   return (
     <div className="card">
-
       <h2 className="form-title">Login</h2>
 
-      {!isLoggedIn ? (
-        <form onSubmit={handleSubmit} className="form">
+      <form onSubmit={handleSubmit} className="form">
 
-          <input
-            type="email"
-            id="email"
-            name="email"
-            autoComplete="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+        <input
+          type="email"
+          placeholder="Enter your email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
 
-          <input
-            type="password"
-            id="password"
-            name="password"
-            autoComplete="current-password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+        <input
+          type="password"
+          placeholder="Enter your password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
 
-          <button type="submit">
-            Login
-          </button>
+<button type="submit" className="btn-blue" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
+        </button>        
+      
 
-        </form>
-      ) : (
-        <>
-          <p className="login-message">
-            You are already logged in
-          </p>
+      </form>
 
-          <button 
-            onClick={handleLogout}
-            className="logout-btn"
-          >
-            Logout
-          </button>
-        </>
-      )}
-
+      <p style={{ marginTop: "15px" }}>
+        Don't have an account?{" "}
+        <span
+          style={{ color: "#3b82f6", cursor: "pointer", fontWeight: "500" }}
+          onClick={() => navigate("/signup")}
+        >
+          Signup
+        </span>
+      </p>
     </div>
   );
 }

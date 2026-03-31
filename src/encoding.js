@@ -61,43 +61,57 @@ function EncodingPage() {
       alert(err.message || "Decoding failed");
     }
   };
+return (
+  
+  <div className="encode-container">
+    
+    <div className="algo-select">
+      <label>Supported Encoding :</label>
 
-  return (
-    <div className="encrypt-wrapper">
-
-      {/* LEFT */}
-      <div className="encrypt-left">
-        <h2>Encode Text</h2>
-
-        <textarea
-          placeholder="Enter text"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-        />
-
-        <button onClick={handleEncode}>Encode</button>
-
-        <h3>Encoded Output</h3>
-        <textarea value={encoded} readOnly />
-      </div>
-
-      {/* RIGHT */}
-      <div className="encrypt-right">
-        <h2>Decode Text</h2>
-
-        <textarea
-          value={encoded}
-          onChange={(e) => setEncoded(e.target.value)}
-        />
-
-        <button onClick={handleDecode}>Decode</button>
-
-        <h3>Decoded Output</h3>
-        <textarea value={decoded} readOnly />
-      </div>
-
+      <select>
+        <option value="Base64">Base64</option>
+      </select>
     </div>
-  );
+    {/* 🔐 ENCODE */}
+    <div className="encode-box">
+      <h2>🔐 Encode Text</h2>
+
+      <textarea
+        placeholder="Enter text to encode..."
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+      />
+
+      <button className="btn-blue" onClick={handleEncode}>
+        Encode
+      </button>
+
+      <h3>Encoded Output</h3>
+
+      <textarea value={encoded} readOnly />
+    </div>
+
+    {/* 🔓 DECODE */}
+    <div className="encode-box">
+      <h2>🔓 Decode Text</h2>
+
+      <textarea
+        placeholder="Paste encoded text..."
+        value={encoded}
+        onChange={(e) => setEncoded(e.target.value)}
+      />
+
+      <button className="btn-blue" onClick={handleDecode}>
+        Decode
+      </button>
+
+      <h3>Decoded Output</h3>
+
+      <textarea value={decoded} readOnly />
+    </div>
+
+  </div>
+);
 }
 
 export default EncodingPage;

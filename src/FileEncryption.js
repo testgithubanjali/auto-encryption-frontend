@@ -73,37 +73,68 @@ function FileEncryption() {
     a.click();
     a.remove();
   };
+return (
+  <div className="file-main">
 
-  return (
-    <div className="card">
+     <div className="algo-select">
+      <label>Supported Encryptions:</label>
 
-      <h2>File Encryption</h2>
+      <select>
+        <option value="AES">AES</option>
+      </select>
+    </div>
+    <div className="file-box">
+      <h2>🔐 Encrypt File</h2>
 
-      {/* 🔐 Encrypt Section */}
-      <h3>Encrypt File</h3>
-      <input
-        type="file"
-        onChange={(e) => setFile(e.target.files[0])}
-      />
+      <label>Choose File</label>
 
-      <button onClick={uploadFile} style={{ marginTop: 10 }}>
+      <div className="file-row">
+        <label className="file-btn">
+          Choose File
+          <input
+            type="file"
+            onChange={(e) => setFile(e.target.files[0])}
+          />
+        </label>
+
+        <span className="file-name">
+          {file ? file.name : "No file selected"}
+        </span>
+      </div>
+
+      <button className="btn-orange" onClick={uploadFile}>
         Encrypt & Download
       </button>
+    </div>
 
-      {/* 🔓 Decrypt Section */}
-      <h3 style={{ marginTop: 30 }}>Decrypt File</h3>
-      <input
-        type="file"
-        accept=".enc"
-        onChange={(e) => setEncFile(e.target.files[0])}
-      />
+    {/* 🔓 DECRYPT */}
+    <div className="file-box">
+      <h2>🔓 Decrypt File</h2>
 
-      <button onClick={decryptFile} style={{ marginTop: 10 }}>
+      <label>Choose File</label>
+
+      <div className="file-row">
+        <label className="file-btn">
+          Choose File
+          <input
+            type="file"
+            accept=".enc"
+            onChange={(e) => setEncFile(e.target.files[0])}
+          />
+        </label>
+
+        <span className="file-name">
+          {encFile ? encFile.name : "No file selected"}
+        </span>
+      </div>
+
+      <button className="btn-orange" onClick={decryptFile}>
         Decrypt & Download
       </button>
-
     </div>
-  );
+
+  </div>
+);
 }
 
 export default FileEncryption;
